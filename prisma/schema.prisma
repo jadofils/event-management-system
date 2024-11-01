@@ -8,18 +8,24 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   firstname String 
   lastname  String
-  email     String   @unique
+  email     String    @unique
   password  String 
+  role      Role      @default(USER) // Role field to distinguish between user roles
 
   // Relation to Booking
   bookings  Booking[] // One User can have many Bookings
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model Event {
-  id              Int      @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   title           String
   description     String
   date            DateTime
@@ -30,19 +36,18 @@ model Event {
 }
 
 model Booking {
-  id             Int      @id @default(autoincrement()) // Primary key
-  userId         Int      // Reference to the User
-  eventId        Int      // Reference to the Event
-  dateBooked     DateTime // Date when the booking was made
-  numberOfPlaces Int      // Number of places booked
-  status         Status    @default(PENDING) // Status of the booking
+  id             Int       @id @default(autoincrement())
+  userId         Int       // Foreign key to User
+  eventId        Int       // Foreign key to Event
+  dateBooked     DateTime
+  numberOfPlaces Int
+  status         Status    @default(PENDING)
 
   // Relationships
-  user           User      @relation(fields: [userId], references: [id]) // User relation
-  event          Event     @relation(fields: [eventId], references: [id]) // Event relation
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete if User is deleted
+  event          Event     @relation(fields: [eventId], references: [id], onDelete: Cascade) // Cascade delete if Event is deleted
 }
 
-// Enum for Booking status
 enum Status {
   PENDING
   APPROVED

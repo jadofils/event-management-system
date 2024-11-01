@@ -14,7 +14,6 @@ const validateUserInput = (data) => {
   // Further validation can be added here (e.g., email format, password strength)
   return { valid: true };
 };
-
 // Get a user by ID
 export async function GET(request, { params }) {
   try {
@@ -73,16 +72,24 @@ export async function PUT(request, { params }) {
   }
 }
 
-// Delete a user by ID
-export async function DELETE(request, { params }) {
+
+
+export async function DELETE(req, context) {
+  const { id } = context.params; // Directly access `id` from context.params (no need to await)
   try {
-    await prisma.user.delete({
-      where: { id: Number(params.id) },
-    });
-    return NextResponse.json(
-      { success: true, message: 'User deleted successfully' },
-      { status: 204 }
-    );
+    const result = await deleteUserById(id); // Call the delete function
+
+    if (result.success) {
+      return NextResponse.json(
+        { success: true, message: 'User deleted successfully' },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        { success: false, message: result.message || 'User not found' },
+        { status: 404 }
+      );
+    }
   } catch (error) {
     console.error('Error deleting user:', error);
     return NextResponse.json(

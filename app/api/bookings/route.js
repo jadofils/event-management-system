@@ -1,5 +1,25 @@
 import { NextResponse } from 'next/server';
-import prisma from '../../../lib/prisma'; // Adjusted path for Prisma client
+import prisma from '../../../lib/prisma'; // Adjust the path for your Prisma client
+
+// Fetch all bookings
+export async function GET() {
+  try {
+    const bookings = await prisma.booking.findMany({
+      include: {
+        user: true, // Include user data if there’s a relationship
+        event: true, // Include event data if there’s a relationship
+      },
+    });
+
+    return NextResponse.json(bookings, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    return NextResponse.json(
+      { success: false, message: 'Error fetching bookings' },
+      { status: 500 }
+    );
+  }
+}
 
 // Create a new booking
 export async function POST(request) {
