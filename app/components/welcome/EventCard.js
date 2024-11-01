@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect } from 'react';
 
 export default function EventsSection() {
@@ -60,33 +61,40 @@ export default function EventsSection() {
     },
   ];
 
+  // Create state for each card
   const [currentEventIndices, setCurrentEventIndices] = useState([0, 1, 2]); // Start with first three indices
   const [openEventIds, setOpenEventIds] = useState([null, null, null]);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  // Use useEffect to set the isMobile state based on window size
+  const toggleEvent = (cardIndex, id) => {
+    const newOpenEventIds = [...openEventIds];
+    newOpenEventIds[cardIndex] = openEventIds[cardIndex] === id ? null : id;
+    setOpenEventIds(newOpenEventIds);
+  };
+
+  // Automatically slide events every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentEventIndices((prevIndices) =>
+        prevIndices.map((index, cardIndex) => (index + 1) % events.length)
+      );
+    }, 5000); // Change every 5000 milliseconds (5 seconds)
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [events.length]);
+
+  // Update isMobile on resize
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
 
-    // Set the initial value
-    handleResize();
-
-    // Add event listener
     window.addEventListener('resize', handleResize);
-
-    // Cleanup event listener on unmount
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
-  const toggleEvent = (cardIndex, id) => {
-    const newOpenEventIds = [...openEventIds];
-    newOpenEventIds[cardIndex] = newOpenEventIds[cardIndex] === id ? null : id;
-    setOpenEventIds(newOpenEventIds);
-  };
   return (
     <section className="py-20 bg-gray-800">
       <div className="container mx-auto px-4">
