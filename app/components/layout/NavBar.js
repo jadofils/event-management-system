@@ -1,6 +1,7 @@
 'use client'
 // components/layout/Navbar.js
 import { useState } from 'react';
+import Link from 'next/link'; // Import Link from Next.js
 import { FaMoon, FaSun, FaBars, FaTimes } from 'react-icons/fa';
 
 export default function AdminNavBar() {
@@ -38,15 +39,19 @@ export default function AdminNavBar() {
           <FaMoon onClick={toggleTheme} className="cursor-pointer hover:text-gray-400 transition duration-300 ease-in-out" />
         )}
 
-        {/* Login Button */}
-        <button className={`px-3 py-1 rounded-md transition-colors duration-300 ease-in-out ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-300 hover:bg-gray-400'}`}>
-          Login
-        </button>
+        {/* Login Link */}
+        <Link href="/auth/login">
+          <button className={`px-3 py-1 rounded-md transition-colors duration-300 ease-in-out ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-300 hover:bg-gray-400'}`}>
+            Login
+          </button>
+        </Link>
 
-        {/* Register Button */}
-        <button className={`px-3 py-1 rounded-md transition-colors duration-300 ease-in-out ${isDarkMode ? 'bg-green-600 hover:bg-green-500' : 'bg-gray-300 hover:bg-gray-400'}`}>
-          Register
-        </button>
+        {/* Register Link */}
+        <Link href="/auth/register">
+          <button className={`px-3 py-1 rounded-md transition-colors duration-300 ease-in-out ${isDarkMode ? 'bg-green-600 hover:bg-green-500' : 'bg-gray-300 hover:bg-gray-400'}`}>
+            Register
+          </button>
+        </Link>
       </div>
     </nav>
   );

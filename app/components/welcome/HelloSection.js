@@ -12,11 +12,15 @@ export default function HeroSection() {
                 Create, manage, and track your events with our powerful platform.
               </p>
               <Link 
-                href="/register" 
-                className="bg-primary text-accent px-8 py-3 rounded-md text-lg hover:bg-primary/90 transition-colors"
-              >
-                Get Started
-              </Link>
+  href="/auth/register" 
+  className="bg-slate-900 text-slate-50 px-8 py-3 rounded-md text-lg 
+             hover:bg-primary/90 hover:shadow-lg transition-all 
+             focus:outline-none focus:ring-2 focus:ring-accent 
+             active:bg-primary/80 active:scale-95"
+>
+  Register
+</Link>
+
             </div>
           </div>
         </section>

@@ -4,12 +4,11 @@
 import { useState } from 'react';
 import Sidebar from '../../components/layout/SideBar';
 import AdminNavBar from '../../components/layout/AdminNavBar';
-import UsersTable from '../../components/ui/UsersTable';
+import UsersTable from '../../components/ui/userstable';
 import EventsTable from '../../components/ui/events'
 import BookingsTable from '../../components/ui/bookings'
 import RejectedEvents from '../../components/ui/rejected'
 import ApprovedBookings from '../../components/ui/approvedBookings';
-import pendingEvents from '../../components/ui/pending';
 import PendingBookings from '../../components/ui/pending';
 
 
