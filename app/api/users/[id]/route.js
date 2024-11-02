@@ -5,20 +5,24 @@ import jwt from 'jsonwebtoken'; // Import JSON Web Token
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret'; // Ensure this is set in your environment variables
 
-// Helper function to validate user input
 const validateUserInput = (data) => {
-  const { firstname, lastname, email, password } = data;
-  if (!firstname || !lastname || !email || !password) {
+  const { firstname, lastname, email } = data; // Removed password from required fields
+  if (!firstname || !lastname || !email) {
     return { valid: false, message: 'All fields are required' };
   }
-  // Further validation can be added here (e.g., email format, password strength)
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { valid: false, message: 'Invalid email format' };
+  }
   return { valid: true };
 };
 // Get a user by ID
 export async function GET(request, { params }) {
+  // Await the params to ensure they are resolved
+  const { id } = await params; // Ensure this line is present
+
   try {
     const user = await prisma.user.findUnique({
-      where: { id: Number(params.id) },
+      where: { id: Number(id) }, // Use the awaited id
     });
 
     if (!user) {
@@ -40,6 +44,9 @@ export async function GET(request, { params }) {
 
 // Update a user by ID
 export async function PUT(request, { params }) {
+  // Await the params to ensure they are resolved
+  const { id } = await params; // Ensure this line is present
+
   try {
     const inputData = await request.json();
     const validation = validateUserInput(inputData);
@@ -51,12 +58,11 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const { firstname, lastname, email, password } = inputData;
-    const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+    const { firstname, lastname, email,role} = inputData;
 
     const updatedUser = await prisma.user.update({
-      where: { id: Number(params.id) },
-      data: { firstname, lastname, email, password: hashedPassword }, // Use hashed password
+      where: { id: Number(id) }, // Use the awaited id
+      data: { firstname, lastname, email,role}, // Use hashed password
     });
 
     // Generate a JWT for the updated user
@@ -72,26 +78,33 @@ export async function PUT(request, { params }) {
   }
 }
 
+// Delete a user by ID
+export async function DELETE(req, { params }) {
+  // Await the params to ensure they are resolved
+  const { id } = params; // Get the ID from the URL
 
-
-export async function DELETE(req, context) {
-  const { id } = context.params; // Directly access `id` from context.params (no need to await)
   try {
-    const result = await deleteUserById(id); // Call the delete function
+    // Delete the user using Prisma
+    const deletedUser = await prisma.user.delete({
+      where: { id: Number(id) }, // Ensure the ID is a number
+    });
 
-    if (result.success) {
+    // If deletion is successful
+    return NextResponse.json(
+      { success: true, message: 'User deleted successfully', user: deletedUser },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    
+    // Handle specific error cases
+    if (error.code === 'P2025') { // Prisma specific error for "Record not found"
       return NextResponse.json(
-        { success: true, message: 'User deleted successfully' },
-        { status: 200 }
-      );
-    } else {
-      return NextResponse.json(
-        { success: false, message: result.message || 'User not found' },
+        { success: false, message: 'User not found' },
         { status: 404 }
       );
     }
-  } catch (error) {
-    console.error('Error deleting user:', error);
+
     return NextResponse.json(
       { success: false, message: 'Error deleting user' },
       { status: 500 }

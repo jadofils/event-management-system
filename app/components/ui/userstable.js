@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link'; // Make sure to import Link
 
 export default function UsersTable() {
   const [users, setUsers] = useState([]);
@@ -39,18 +40,31 @@ export default function UsersTable() {
   }
 
   const handleDelete = async (id) => {
+    // Confirm deletion
+    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+    if (!confirmDelete) return; // Exit if the user cancels
+  
     try {
       const response = await fetch(`/api/users/${id}`, { method: 'DELETE' });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to delete user');
       }
-      setUsers(users.filter(user => user.id !== id));
+  
+      // Refresh the user list
+      await fetchUsers(); // Fetch fresh data after deletion
       console.log('User deleted successfully');
     } catch (error) {
       console.error('Error deleting user:', error);
       alert(`Error deleting user: ${error.message}`);
     }
+  };
+
+  const handleUpdateClick = (e, userId) => {
+    e.preventDefault(); // Prevent the default link behavior
+    alert(userId); // Alert the user ID
+    // After alert, navigate to the update page
+    window.location.href = `/auth/edituser?id=${userId}`; // Using Next.js routing with query parameter
   };
 
   return (
@@ -91,12 +105,14 @@ export default function UsersTable() {
                       {user.isActive ? 'Active' : 'Inactive'}
                     </td>
                     <td className="px-4 py-2 border border-gray-300 text-center">
-                      <a
-                        href='/components/ui/update'
+                      <Link
+                        href={`/users/${user.id}/update`}
+                        onClick={(e) => handleUpdateClick(e, user.id)} // Add onClick handler here
                         className="text-blue-500 hover:text-blue-700 mr-3"
                       >
+
                         Update
-                      </a>
+                      </Link>
                       <button
                         onClick={() => handleDelete(user.id)}
                         className="text-red-500 hover:text-red-700"
