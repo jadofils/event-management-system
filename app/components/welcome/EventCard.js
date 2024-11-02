@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function EventsSection() {
   const events = [
@@ -61,39 +61,39 @@ export default function EventsSection() {
     },
   ];
 
-  // Create state for each card
+
   const [currentEventIndices, setCurrentEventIndices] = useState([0, 1, 2]); // Start with first three indices
   const [openEventIds, setOpenEventIds] = useState([null, null, null]);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(false); // Initialize to false
 
+  // Set isMobile based on screen width after component mounts
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    
+    handleResize(); // Set initial value
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Automatically slide events every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentEventIndices((prevIndices) =>
+        prevIndices.map((index) => (index + 1) % events.length)
+      );
+    }, 5000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [events.length]);
+
+  // Toggle event description visibility
   const toggleEvent = (cardIndex, id) => {
     const newOpenEventIds = [...openEventIds];
     newOpenEventIds[cardIndex] = openEventIds[cardIndex] === id ? null : id;
     setOpenEventIds(newOpenEventIds);
   };
 
-  // Automatically slide events every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentEventIndices((prevIndices) =>
-        prevIndices.map((index, cardIndex) => (index + 1) % events.length)
-      );
-    }, 5000); // Change every 5000 milliseconds (5 seconds)
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [events.length]);
-
-  // Update isMobile on resize
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
 
   return (
     <section className="py-20 bg-gray-800">
@@ -108,11 +108,10 @@ export default function EventsSection() {
               className={`bg-gray-700 ${isMobile ? 'w-full' : 'w-[30%]'} p-6 rounded-lg shadow-md flex flex-col transition-transform duration-300 mx-4`}
             >
               <img
-  src={events[currentIndex].image}
-  alt={events[currentIndex].title}
-  className="w-full h-auto max-h-48 object-cover rounded-t-lg"
-/>
-
+                src={events[currentIndex].image}
+                alt={events[currentIndex].title}
+                className="w-full h-auto max-h-48 object-cover rounded-t-lg"
+              />
               <h3 className="text-accent text-xl text-white font-bold mb-2">{events[currentIndex].title}</h3>
               <p className="text-slate-300 mb-2">{events[currentIndex].date}</p>
               <button 
@@ -130,4 +129,5 @@ export default function EventsSection() {
       </div>
     </section>
   );
-}
+};
+
