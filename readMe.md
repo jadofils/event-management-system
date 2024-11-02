@@ -66,14 +66,12 @@ Prisma CLI (npm install -g prisma)
 Steps
 Clone the Repository
 
-bash
-Copy code
+
 git clone https://github.com/jadofils/event-management-system.git
 cd eventmanagement
 Install Dependencies
 
-bash
-Copy code
+
 npm install
 Configure Environment Variables
 
@@ -81,7 +79,8 @@ Create a .env file in the project root and add your database credentials:
 
 env
 Copy code
-DATABASE_URL="your-database-connection-string"
+DATABASE_URL="DATABASE_URL="postgresql://postgres.sehgclzcrtcbmewmyhrz:YxxKp8Hzya6xqIPY@aws-0-eu-central-1.pooler.supabase.com:5432/postgres"
+"
 Run Prisma Migrations
 
 
@@ -126,14 +125,7 @@ Include screenshots here to showcase your application’s interface, dashboard, 
 
 ![Dashboard](public/screenshots/dashboard.png)
 ![Event Carousel](public/screenshots/event-carousel.png)
-Contributing
-Contributions are welcome! Please follow these steps:
 
-Fork the repository.
-Create a new feature branch (git checkout -b feature/YourFeature).
-Commit your changes (git commit -m 'Add new feature').
-Push to the branch (git push origin feature/YourFeature).
-Open a pull request.
 
 
 Author
