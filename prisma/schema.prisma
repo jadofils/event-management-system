@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  firstname String 
-  lastname  String
-  email     String    @unique
-  password  String 
-  role      Role      @default(USER) // Role field to distinguish between user roles
+  id          Int       @id @default(autoincrement())
+  firstname   String 
+  lastname    String
+  email       String    @unique
+  password    String 
+  role        Role      @default(USER) // Role field to distinguish between user roles
+  imageUrl    String?   // New field for storing the user's image URL (nullable)
 
   // Relation to Booking
-  bookings  Booking[] // One User can have many Bookings
+  bookings    Booking[] // One User can have many Bookings
 }
 
 enum Role {
@@ -30,6 +31,7 @@ model Event {
   description     String
   date            DateTime
   availableSeats  Int
+  imageUrl        String?   // Field for storing the event image URL (nullable)
 
   // Relation to Booking
   bookings        Booking[] // One Event can have many Bookings

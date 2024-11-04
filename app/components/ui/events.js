@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
+import Link from 'next/link';
 export default function EventsTable() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,20 +37,29 @@ export default function EventsTable() {
   }
 
   const handleDelete = async (id) => {
+    const confirmDeletion = confirm("Do you really want to delete the Event?");
+    if (!confirmDeletion) {
+      alert('Event deletion canceled!');
+      return;
+    }
+  
     try {
       const response = await fetch(`/api/events/${id}`, { method: 'DELETE' });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to delete event');
       }
+  
+      // Update the events state by filtering out the deleted event
       setEvents(events.filter(event => event.id !== id));
+      alert('Event deleted successfully');
       console.log('Event deleted successfully');
     } catch (error) {
       console.error('Error deleting event:', error);
       alert('Error deleting event: ' + error.message);
     }
   };
-
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center h-20">
@@ -89,19 +98,19 @@ export default function EventsTable() {
                   {event.isActive ? 'Active' : 'Inactive'}
                 </td>
                 <td className="px-4 py-2 border border-gray-300 text-center">
-                  <a
-                    href={`/api/events/${event.id}`}
-                    className="text-blue-500 hover:text-blue-700 mr-3"
-                  >
-                    Update
-                  </a>
-                  <button
-                    onClick={() => handleDelete(event.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
-                </td>
+  <Link
+    href={`/auth/editevents?id=${event.id}`}  // Corrected URL formatting
+    className="text-blue-500 hover:text-blue-700 mr-3"
+  >
+    Update
+  </Link>
+  <button
+    onClick={() => handleDelete(event.id)}
+    className="text-red-500 hover:text-red-700"
+  >
+Delete
+</button>
+</td>
               </tr>
             ))
           ) : (
